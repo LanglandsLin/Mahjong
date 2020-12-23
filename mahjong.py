@@ -31,9 +31,9 @@ class Mahjong():
         else:
             self.hand = self.requests[1].split()[5:]
             self.desk = {}
-            self.desk["peng"] = []
-            self.desk["gang"] = []
-            self.desk["chi"] = []
+            self.desk["PENG"] = []
+            self.desk["GANG"] = []
+            self.desk["CHI"] = []
             peng = ""
             gang = ""
             chi = ""
@@ -47,16 +47,16 @@ class Mahjong():
                     self.hand.remove(request[-1])
                     self.hand.remove(peng)
                     self.hand.remove(peng)
-                    self.desk["peng"].append(peng)
+                    self.desk["PENG"].append(peng)
                     
                 if request[-1] == "GANG" and int(request[1]) == self.id:
                     self.hand = list(filter((gang).__ne__, self.hand))
-                    self.desk["gang"].append(gang)
+                    self.desk["GANG"].append(gang)
                     
                 if len(request) > 2 and request[2] == "BUGANG" and int(request[1]) == self.id:
                     self.hand.remove(request[-1])
-                    self.desk["peng"].remove(request[-1])
-                    self.desk["gang"].append(request[-1])
+                    self.desk["PENG"].remove(request[-1])
+                    self.desk["GANG"].append(request[-1])
                     
                 if len(request) > 2 and request[2] == "CHI" and int(request[1]) == self.id:
                     card1 = request[-2]
@@ -70,7 +70,7 @@ class Mahjong():
                     card2 = request[-1]
                     self.hand.remove(card2)
 
-                    self.desk["chi"].append(card1)
+                    self.desk["CHI"].append(card1)
                 
                 response = response.split()
                 if response[0] == "PLAY":
@@ -97,7 +97,7 @@ class Mahjong():
                     desk_cards.append(desk_card)
         desk_cards = tuple(desk_cards)
         try:
-            fan = MahjongFanCalculator(desk_cards, tuple(self.hand), card, 0, False, False, False, False, self.id, self.quan)
+            fan = MahjongFanCalculator(desk_cards, tuple(self.hand), card, 0, int(self.request[0]) == 2, False, False, self.left_card == 0, self.id, self.quan)
         except Exception as err:
             return 0
         else:
@@ -129,7 +129,7 @@ class Mahjong():
         if self.left_card == 0:
             return False
         hand = self.hand + [card]
-        for item in self.desk["peng"]:
+        for item in self.desk["PENG"]:
             if hand.count(item) == 1:
                 self.bugang = item
                 return True
@@ -137,7 +137,7 @@ class Mahjong():
     
     def check_hu(self, card):
         fan = self.calculate_fan(card)
-        if fan == 0:
+        if fan < 8:
             return False
         else:
             return True
