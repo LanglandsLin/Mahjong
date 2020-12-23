@@ -17,6 +17,7 @@ class Mahjong():
         self.requests = self.input["requests"]
         self.responses = self.input["responses"]
         self.request = self.requests[-1].split()
+        self.left_card = 21
         self.id = int(self.requests[0].split()[1])
         self.quan = int(self.requests[0].split()[2])
         self.turn = len(self.requests)
@@ -39,6 +40,7 @@ class Mahjong():
             for request, response in zip(self.requests[2:], self.responses[2:]):
                 request = request.split()
                 if int(request[0]) == 2:
+                    self.left_card -= 1
                     self.hand.append(request[1])
                     
                 if len(request) > 2 and request[2] == "PENG" and int(request[1]) == self.id:
@@ -103,12 +105,16 @@ class Mahjong():
             return fan_num
         
     def check_gang(self, card):
+        if self.left_card == 0:
+            return False
         if self.hand.count(card) == 3:
             self.gang = card
             return True
         return False
     
     def check_angang(self, card):
+        if self.left_card == 0:
+            return False
         hand = self.hand + [card]
         hand_set = set(hand)
         hand_dict={}
@@ -120,6 +126,8 @@ class Mahjong():
         return False
     
     def check_bugang(self, card):
+        if self.left_card == 0:
+            return False
         hand = self.hand + [card]
         for item in self.desk["peng"]:
             if hand.count(item) == 1:
@@ -170,6 +178,7 @@ class Mahjong():
     def available_action(self):
         action_list = []
         if int(self.request[0]) == 2:
+            self.left_card -= 1
             action_list.append("PLAY")
             card = self.request[1]
             if self.check_angang(card): action_list.append("ANGANG")
